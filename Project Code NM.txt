@@ -1,0 +1,55 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Example dataset
+data_dict = {
+    'year': [2023, 2023, 2023, 2023, 2023, 2023, 2023, 2023, 2024, 2024, 2024, 2024, 2024, 2024, 2024, 2024],
+    'material': ['Rice', 'Wheat', 'Corn', 'Soybeans', 'Barley', 'Sugar Cane', 'Cotton', 'Potatoes', 'Rice', 'Wheat', 'Corn', 'Soybeans', 'Barley', 'Sugar Cane', 'Cotton', 'Potatoes'],
+    'price': [260, 190, 180, 240, 215, 160, 340, 195, 270, 211, 205, 245, 220, 160, 330, 195]
+}
+
+# Convert data_dict to a pandas DataFrame
+data = pd.DataFrame(data_dict)
+
+# Exploratory Data Analysis (EDA)
+print("Data Head:")
+print(data.head())
+print("\nSummary Statistics:")
+print(data.describe())
+
+# Identify High-Range and Low-Range Materials
+high_range_materials = data.nlargest(10, 'price')
+low_range_materials = data.nsmallest(10, 'price')
+
+# Calculate High and Low Percentage Change
+data['price_change'] = data.groupby('material')['price'].pct_change() * 100
+high_pct_change_materials = data.nlargest(10, 'price_change')
+low_pct_change_materials = data.nsmallest(10, 'price_change')
+
+# Analyze Price Change Over Years
+price_change_over_years = data.groupby('year')['price'].agg(['min', 'max'])
+price_change_over_years['price_range'] = price_change_over_years['max'] - price_change_over_years['min']
+
+# Correlation Analysis (excluding non-numeric columns)
+correlation_matrix = data.drop(columns=['material']).corr()
+
+# Display results interactively
+print("\nHigh-Range Materials:")
+print(high_range_materials)
+print("\nLow-Range Materials:")
+print(low_range_materials)
+print("\nHigh Percentage Change Materials:")
+print(high_pct_change_materials)
+print("\nLow Percentage Change Materials:")
+print(low_pct_change_materials)
+print("\nPrice Change Over Years:")
+print(price_change_over_years)
+print("\nCorrelation Matrix:")
+print(correlation_matrix)
+
+# Plot heatmap for correlation matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('Correlation Matrix')
+plt.show()
